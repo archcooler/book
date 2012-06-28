@@ -1,0 +1,278 @@
+																								<!-- Connexion à la base de données -->
+<html manifest="cache.manifest"> 																										<!-- Adresse du cache.manifest par rapport au fichier courant -->
+
+
+<!-- Mirrored from www.travailassocie.com/webapp/bestof.php?num=105&cat=evenementiel by HTTrack Website Copier/3.x [XR&CO'2010], Thu, 28 Jun 2012 08:51:47 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+
+<title>Tr. Associ&eacute;</title>																										<!-- Nom que portera la Webapp -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />																	<!-- Encodage du contenu en utf-8 -->
+<meta name="author" content="Travail Associé ©2012">																					<!-- Auteur de la page -->
+<meta name="owner" content="Travail Associé ©2012">																						<!-- Propriétaire de la page -->
+
+<!-- Codes iOS/Android -->
+<meta name="apple-mobile-web-app-capable" content="yes" /> 																				<!-- L'app peut se débrouiller sans Safari (supprimer la barre d'url (en haut) et celle de navigation (en bas)) -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" /> 																	<!-- La barre contenant l'horloge etc est noire et devient un block qui décale le contenu dessous contrairement à la valeur "black-translucent" -->
+<meta name="viewport" content="user-scalable=no, width=device-width, minimum-scale=1.0, maximum-scale=1.0" /> 							<!-- Application (empêche le zoom) -->
+<meta name="apple-touch-fullscreen" content="yes"/>																						<!-- en plein écran -->
+<link rel="apple-touch-icon" href="image/travailassocie.png"/> 																			<!-- Choisir une icône pour le springboard -->
+<link rel="apple-touch-startup-image" 
+	media="screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation:portrait)"
+	href="image/startup_ipad_portrait.jpg"/>																							<!-- Choisir une image de chargement (768*1004, orientation portrait, pour iPad) -->
+
+<!-- CSS -->
+<link href="stylesheet.css" rel="stylesheet" media="screen" type="text/css">															<!-- Feuille de style global -->
+<!-- <link rel="stylesheet" type="text/css" href="plugins/photoswipe/photoswipe.css"> -->												<!-- Feuille de style du plugin PhotoSwipe -->
+<link rel="stylesheet" type="text/css" href="plugins/ferroslider/jquery.ferro.ferroSlider.css">											<!-- Feuille de style du plugin Ferroslider -->
+
+<!-- Scripts -->
+<script type="text/javascript" src="javascript/jquery-1.7.1.min.js" language="javascript" charset="utf-8"></script>						<!-- Utilisation du framework jQuery -->
+<script type="text/javascript" src="javascript/iscroll.js" language="javascript" charset="utf-8"></script>								<!-- Utilisation du plugin iScroll -->
+<!-- <script type="text/javascript" src="plugins/photoswipe/lib/klass.min.js" language="javascript" charset="utf-8"></script> -->					<!-- Utilisation du plugin Klass nécessaire pour le PhotoSwipe -->
+<!-- <script type="text/javascript" src="plugins/photoswipe/code.photoswipe.jquery-3.0.4.js" language="javascript" charset="utf-8"></script> -->	<!-- Utilisation du plugin PhotoSwipe pour jQuery (! non original) -->
+<script type="text/javascript" src="javascript/jquery.easing.1.3.js" language="javascript" charset="utf-8"></script>					<!-- Utilisation de la librairie à effet avancé de jQuery -->
+<script type="text/javascript" src="plugins/ferroslider/jquery.ferro.ferroSliderDev.js" charset="utf-8"></script>						<!-- Utilisation du plugin FerroSlider pour jQuery (! non original) -->
+<script type="text/javascript" src="javascript/jquery.touchSwipe-1.2.5.js"></script>
+<script type="text/javascript">
+
+//---------------------------------------------------- Conseils, Remarques -------------------------------------------------------
+// ATTENTION : ne pas mettre à jour les scripts "ferroSliderDev.js" et "code.photoswipe.jquery-3.0.4.js" car ils ont été modifiés 
+// pour être compatible iPad, tout en ajoutant des fonctionnalités : par exemple l'ajout de la description des photos sur les 
+// diaporamas PhotoSwipe.
+
+// A SAVOIR : la fonction "e.preventDefault()" empêche les liens de fonctionner à l'interieur d'un contenu dans le cas où un 
+// événement "touchstart" y aurai été associé... C'est pour cette raison que le script "ferroSliderDev.js" a été modifié.
+// La webapp est concentrée sur cette seule et unique page (index.php) pour permettre une gestion du cache plus facile.
+//--------------------------------------------------------------------------------------------------------------------------------
+
+//------------------------------------------- Déclaration et initialisation des variables ----------------------------------------
+var myPhotoSwipe=new Array();
+var ferroSlider=new Object();
+
+var IMG_WIDTH = 695;
+var speed=500;
+
+var imgs=new Array();
+var maxImages=new Array();
+var currentImg=new Array();
+var countClient=0;
+var isInitialised=0;
+
+	
+var swipeOptions=
+{
+	triggerOnTouchEnd : true,	
+	swipeStatus : swipeStatus,
+	allowPageScroll:"vertical",
+	threshold:20
+}
+//--------------------------------------------------------------------------------------------------------------------------------
+
+//------------------------------------------------- Initialisation de l'application ----------------------------------------------
+$(document).ready(function(){
+	//Fixe le footer en bas de la page si nous sommes sur iPad/iPhone à cause du viewport/page bugs dans le mobile webkit
+    if(navigator.platform == 'iPad' || navigator.platform == 'iPhone' || navigator.platform == 'iPod')
+    {
+         $("#logo_bottom").hide();
+		 $("#deco_bottom").hide();
+		 $("#deco_back").hide();
+    };
+	
+	$('a').bind('click', function() {
+	   window.location = $(this).attr('href');
+	   return false;
+	});
+
+	//Application du Ferroslider qui permet une navigation des clients par navigation vertical dans ce cas précis
+	ferroSlider = $('.slidingSpaces').ferroSlider({
+		displace				: 'column', 		//Pour un slide vertical exclusivement
+		easing                  : 'easeOutExpo', 	//Pour un effet plus fluide lors de l'animation
+		feedbackArrows          : true,				//Possibilité de naviguer avec des flèches
+		time : 600									//Temps d'éxecution de la transition
+	});
+
+
+	
+	countClient=0;
+	$('.client').each(function(){
+		maxImages[countClient] = $("#client_"+countClient+" .imgs img").length;
+		currentImg[countClient]=0;
+		imgs[countClient] = $("#client_"+countClient+" .imgs");
+		imgs[countClient].swipe( swipeOptions );
+		countClient++;
+	});
+	
+});
+//--------------------------------------------------------------------------------------------------------------------------------
+
+//---------------------------------------------------------- Les fonctions -------------------------------------------------------
+
+
+//--------------------------------------------------------------------------------------------------------------------------------
+
+	
+/**
+* Catch each phase of the swipe.
+* move : we drag the div.
+* cancel : we animate back to where we were
+* end : we animate to the next image
+*/			
+function swipeStatus(event, phase, direction, distance)
+{
+
+	countClient=$(this).attr('title');
+	//If we are moving before swipe, and we are going Lor R in X mode, or U or D in Y mode then drag.
+	if( phase=="move" && (direction=="left" || direction=="right") )
+	{
+		var duration=0;
+		
+		if (direction == "left")
+			scrollImages((IMG_WIDTH * currentImg[countClient]) + distance, duration);
+		
+		else if (direction == "right"){
+			scrollImages((IMG_WIDTH * currentImg[countClient]) - distance, duration);
+			}
+		
+	}
+	
+	else if ( phase == "cancel")
+	{
+		scrollImages(IMG_WIDTH * currentImg[countClient], speed);
+	}
+	
+	else if ( phase =="end" )
+	{
+		if (direction == "right")
+			previousImage()
+		else if (direction == "left")			
+			nextImage()
+	}
+}
+		
+
+
+function previousImage()
+{
+	currentImg[countClient] = Math.max(currentImg[countClient]-1, 0);
+	scrollImages( IMG_WIDTH * currentImg[countClient], speed);
+}
+
+function nextImage()
+{
+	currentImg[countClient] = Math.min(currentImg[countClient]+1, maxImages[countClient]-1);
+		
+	scrollImages( IMG_WIDTH * currentImg[countClient], speed);
+}
+	
+/**
+* Manuallt update the position of the imgs on drag
+*/
+function scrollImages(distance, duration)
+{
+	
+	imgs[countClient].css("-webkit-transition-duration", (duration/1000).toFixed(1) + "s");
+	
+	//inverse the number we set in the css
+	var value = (distance<0 ? "" : "-") + Math.abs(distance).toString();
+	imgs[countClient].css("-webkit-transform", "translate3d("+value +"px,0px,0px)");
+	
+}
+
+</script>
+
+</head>
+
+<body>
+<div id="all">
+</div>
+<div id="content_0" title="" class="content">
+	<div id="client_0" class="client slidingSpaces panels client" title="Agrippa">
+		<div id="menu_slide"><a href="evenementiel.html" class="backToHome"><div class="bt_back_hor">Accueil <span style="color:#009cd5;">&nbsp;&gt;</span></div><div class="bt_back"><h1>Accueil</h1></div></a><div class="title_cat"><span>Agrippa</span> (1/10)</div></div>
+		<div class="clear"></div>
+		<div id="diaporama"><div class="imgs" title="0">
+			<img alt="Agrippa" longdesc="Projet%20Pollutec%202010%20%26ndash%3b%20stand%20150m2.html" src="../image/page/gd/pha1307111452569720.jpg" alt="Agrippa" />
+		</div></div>
+		<div class="clear"></div>
+	</div>
+	<div id="client_1" class="client slidingSpaces panels client" title="Stand FFVV">
+		<div id="menu_slide"><a href="evenementiel.html" class="backToHome"><div class="bt_back_hor">Accueil <span style="color:#009cd5;">&nbsp;&gt;</span></div><div class="bt_back"><h1>Accueil</h1></div></a><div class="title_cat"><span>Stand FFVV</span> (2/10)</div></div>
+		<div class="clear"></div>
+		<div id="diaporama"><div class="imgs" title="1">
+			<img alt="Stand FFVV" longdesc="Stand%20parapluie%20pour%20la%20FFVV%2c%20F%e9d%e9ration%20Fran%e7aise%20de%20Vol%20%e0%20Voile.html" src="../image/page/gd/pha100512102186831.jpg" alt="Stand FFVV" />
+		</div></div>
+		<div class="clear"></div>
+	</div>
+	<div id="client_2" class="client slidingSpaces panels client" title="Roger Descours">
+		<div id="menu_slide"><a href="evenementiel.html" class="backToHome"><div class="bt_back_hor">Accueil <span style="color:#009cd5;">&nbsp;&gt;</span></div><div class="bt_back"><h1>Accueil</h1></div></a><div class="title_cat"><span>Roger Descours</span> (3/10)</div></div>
+		<div class="clear"></div>
+		<div id="diaporama"><div class="imgs" title="2">
+			<img alt="Roger Descours" longdesc="Stand%20en%20dur%20pour%20salon%20international.html" src="../image/page/gd/pha1005121024408180.jpg" alt="Roger Descours" />
+		</div></div>
+		<div class="clear"></div>
+	</div>
+	<div id="client_3" class="client slidingSpaces panels client" title="Stand Agence de Développement Universitaire">
+		<div id="menu_slide"><a href="evenementiel.html" class="backToHome"><div class="bt_back_hor">Accueil <span style="color:#009cd5;">&nbsp;&gt;</span></div><div class="bt_back"><h1>Accueil</h1></div></a><div class="title_cat"><span>Stand Agence de Développement Universitaire</span> (4/10)</div></div>
+		<div class="clear"></div>
+		<div id="diaporama"><div class="imgs" title="3">
+			<img alt="Stand Agence de Développement Universitaire" longdesc="Stand%20parapluie%20avec%20fly%20case.html" src="../image/page/gd/pha1005121011581281.jpg" alt="Stand Agence de Développement Universitaire" />
+		</div></div>
+		<div class="clear"></div>
+	</div>
+	<div id="client_4" class="client slidingSpaces panels client" title="ITW, stand salon international">
+		<div id="menu_slide"><a href="evenementiel.html" class="backToHome"><div class="bt_back_hor">Accueil <span style="color:#009cd5;">&nbsp;&gt;</span></div><div class="bt_back"><h1>Accueil</h1></div></a><div class="title_cat"><span>ITW, stand salon international</span> (5/10)</div></div>
+		<div class="clear"></div>
+		<div id="diaporama"><div class="imgs" title="4">
+			<img alt="ITW, stand salon international" longdesc="Stand%20en%20dur%20pour%20salon%20international.html" src="../image/page/gd/pha100512101976620.jpg" alt="ITW, stand salon international" />
+		</div></div>
+		<div class="clear"></div>
+	</div>
+	<div id="client_5" class="client slidingSpaces panels client" title="Wagner, développement de logiciels">
+		<div id="menu_slide"><a href="evenementiel.html" class="backToHome"><div class="bt_back_hor">Accueil <span style="color:#009cd5;">&nbsp;&gt;</span></div><div class="bt_back"><h1>Accueil</h1></div></a><div class="title_cat"><span>Wagner, développement de logiciels</span> (6/10)</div></div>
+		<div class="clear"></div>
+		<div id="diaporama"><div class="imgs" title="5">
+			<img alt="Wagner, développement de logiciels" longdesc="Stand%20parapluie%20avec%20fly%20case.html" src="../image/page/gd/pha1005121012435823.jpg" alt="Wagner, développement de logiciels" />
+		</div></div>
+		<div class="clear"></div>
+	</div>
+	<div id="client_6" class="client slidingSpaces panels client" title="IPS, International Plant Selection">
+		<div id="menu_slide"><a href="evenementiel.html" class="backToHome"><div class="bt_back_hor">Accueil <span style="color:#009cd5;">&nbsp;&gt;</span></div><div class="bt_back"><h1>Accueil</h1></div></a><div class="title_cat"><span>IPS, International Plant Selection</span> (7/10)</div></div>
+		<div class="clear"></div>
+		<div id="diaporama"><div class="imgs" title="6">
+			<img alt="IPS, International Plant Selection" longdesc="Stand%20parapluie%20avec%20fly%20case%20et%20totems.html" src="../image/page/gd/pha1005121014913573.jpg" alt="IPS, International Plant Selection" />
+		</div></div>
+		<div class="clear"></div>
+	</div>
+	<div id="client_7" class="client slidingSpaces panels client" title="Robuschi">
+		<div id="menu_slide"><a href="evenementiel.html" class="backToHome"><div class="bt_back_hor">Accueil <span style="color:#009cd5;">&nbsp;&gt;</span></div><div class="bt_back"><h1>Accueil</h1></div></a><div class="title_cat"><span>Robuschi</span> (8/10)</div></div>
+		<div class="clear"></div>
+		<div id="diaporama"><div class="imgs" title="7">
+			<img alt="Robuschi" longdesc="Pollutec%202010%20%26ndash%3b%20stand%2050m2.html" src="../image/page/gd/pha1307111451617218.jpg" alt="Robuschi" />
+		</div></div>
+		<div class="clear"></div>
+	</div>
+	<div id="client_8" class="client slidingSpaces panels client" title="CCI de la Drôme">
+		<div id="menu_slide"><a href="evenementiel.html" class="backToHome"><div class="bt_back_hor">Accueil <span style="color:#009cd5;">&nbsp;&gt;</span></div><div class="bt_back"><h1>Accueil</h1></div></a><div class="title_cat"><span>CCI de la Drôme</span> (9/10)</div></div>
+		<div class="clear"></div>
+		<div id="diaporama"><div class="imgs" title="8">
+			<img alt="CCI de la Drôme" longdesc="Stand%20parapluie.html" src="../image/page/gd/pha1005121022197290.jpg" alt="CCI de la Drôme" />
+		</div></div>
+		<div class="clear"></div>
+	</div>
+	<div id="client_9" class="client slidingSpaces panels client" title="Agrippa">
+		<div id="menu_slide"><a href="evenementiel.html" class="backToHome"><div class="bt_back_hor">Accueil <span style="color:#009cd5;">&nbsp;&gt;</span></div><div class="bt_back"><h1>Accueil</h1></div></a><div class="title_cat"><span>Agrippa</span> (10/10)</div></div>
+		<div class="clear"></div>
+		<div id="diaporama"><div class="imgs" title="9">
+			<img alt="Agrippa" longdesc="Projet%20Pollutec%202010%20%26ndash%3b%20stand%20150m2.html" src="../image/page/gd/pha1307111453242582.jpg" alt="Agrippa" />
+		</div></div>
+		<div class="clear"></div>
+	</div>
+</div>
+
+</div>
+</body>
+
+
+<!-- Mirrored from www.travailassocie.com/webapp/bestof.php?num=105&cat=evenementiel by HTTrack Website Copier/3.x [XR&CO'2010], Thu, 28 Jun 2012 08:52:11 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+</html>

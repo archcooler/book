@@ -1,0 +1,306 @@
+																								<!-- Connexion à la base de données -->
+<html manifest="cache.manifest"> 																										<!-- Adresse du cache.manifest par rapport au fichier courant -->
+
+
+<!-- Mirrored from www.travailassocie.com/webapp/clients.php?num=52 by HTTrack Website Copier/3.x [XR&CO'2010], Thu, 28 Jun 2012 08:47:13 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+<head>
+
+<title>Tr. Associ&eacute;</title>																										<!-- Nom que portera la Webapp -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />																	<!-- Encodage du contenu en utf-8 -->
+<meta name="author" content="Travail Associé ©2012">																					<!-- Auteur de la page -->
+<meta name="owner" content="Travail Associé ©2012">																						<!-- Propriétaire de la page -->
+
+<!-- Codes iOS/Android -->
+<meta name="apple-mobile-web-app-capable" content="yes" /> 																				<!-- L'app peut se débrouiller sans Safari (supprimer la barre d'url (en haut) et celle de navigation (en bas)) -->
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" /> 																	<!-- La barre contenant l'horloge etc est noire et devient un block qui décale le contenu dessous contrairement à la valeur "black-translucent" -->
+<meta name="viewport" content="user-scalable=no, width=device-width, minimum-scale=1.0, maximum-scale=1.0" /> 							<!-- Application (empêche le zoom) -->
+<meta name="apple-touch-fullscreen" content="yes"/>																						<!-- en plein écran -->
+<link rel="apple-touch-icon" href="image/travailassocie.png"/> 																			<!-- Choisir une icône pour le springboard -->
+<link rel="apple-touch-startup-image" 
+	media="screen and (min-device-width: 768px) and (max-device-width: 1024px) and (orientation:portrait)"
+	href="image/startup_ipad_portrait.jpg"/>																							<!-- Choisir une image de chargement (768*1004, orientation portrait, pour iPad) -->
+
+<!-- CSS -->
+<link href="stylesheet.css" rel="stylesheet" media="screen" type="text/css">															<!-- Feuille de style global -->
+<!-- <link rel="stylesheet" type="text/css" href="plugins/photoswipe/photoswipe.css"> -->												<!-- Feuille de style du plugin PhotoSwipe -->
+<link rel="stylesheet" type="text/css" href="plugins/ferroslider/jquery.ferro.ferroSlider.css">											<!-- Feuille de style du plugin Ferroslider -->
+
+<!-- Scripts -->
+<script type="text/javascript" src="javascript/jquery-1.7.1.min.js" language="javascript" charset="utf-8"></script>						<!-- Utilisation du framework jQuery -->
+<script type="text/javascript" src="javascript/iscroll.js" language="javascript" charset="utf-8"></script>								<!-- Utilisation du plugin iScroll -->
+<!-- <script type="text/javascript" src="plugins/photoswipe/lib/klass.min.js" language="javascript" charset="utf-8"></script> -->					<!-- Utilisation du plugin Klass nécessaire pour le PhotoSwipe -->
+<!-- <script type="text/javascript" src="plugins/photoswipe/code.photoswipe.jquery-3.0.4.js" language="javascript" charset="utf-8"></script> -->	<!-- Utilisation du plugin PhotoSwipe pour jQuery (! non original) -->
+<script type="text/javascript" src="javascript/jquery.easing.1.3.js" language="javascript" charset="utf-8"></script>					<!-- Utilisation de la librairie à effet avancé de jQuery -->
+<script type="text/javascript" src="plugins/ferroslider/jquery.ferro.ferroSliderDev.js" charset="utf-8"></script>						<!-- Utilisation du plugin FerroSlider pour jQuery (! non original) -->
+<script type="text/javascript" src="javascript/jquery.touchSwipe-1.2.5.js"></script>
+
+<script type="text/javascript">
+//---------------------------------------------------- Conseils, Remarques -------------------------------------------------------
+// ATTENTION : ne pas mettre à jour les scripts "ferroSliderDev.js" et "code.photoswipe.jquery-3.0.4.js" car ils ont été modifiés 
+// pour être compatible iPad, tout en ajoutant des fonctionnalités : par exemple l'ajout de la description des photos sur les 
+// diaporamas PhotoSwipe.
+
+// A SAVOIR : la fonction "e.preventDefault()" empêche les liens de fonctionner à l'interieur d'un contenu dans le cas où un 
+// événement "touchstart" y aurai été associé... C'est pour cette raison que le script "ferroSliderDev.js" a été modifié.
+// La webapp est concentrée sur cette seule et unique page (index.php) pour permettre une gestion du cache plus facile.
+//--------------------------------------------------------------------------------------------------------------------------------
+
+//------------------------------------------- Déclaration et initialisation des variables ----------------------------------------
+var myPhotoSwipe=new Array();
+var ferroSlider=new Object();
+
+var IMG_WIDTH = 695+3;
+var speed=500;
+
+var imgs=new Array();
+var maxImages=new Array();
+var currentImg=new Array();
+var countClient=0;
+var isInitialised=0;
+
+	
+var swipeOptions=
+{
+	triggerOnTouchEnd : true,	
+	swipeStatus : swipeStatus,
+	allowPageScroll:"vertical",
+	threshold:20
+}
+//--------------------------------------------------------------------------------------------------------------------------------
+
+//------------------------------------------------- Initialisation de l'application ----------------------------------------------
+$(document).ready(function(){
+	//Fixe le footer en bas de la page si nous sommes sur iPad/iPhone à cause du viewport/page bugs dans le mobile webkit
+    if(navigator.platform == 'iPad' || navigator.platform == 'iPhone' || navigator.platform == 'iPod')
+    {
+         $("#logo_bottom").hide();
+		 $("#deco_bottom").hide();
+		 $("#deco_back").hide();
+    };
+	
+	$('a').bind('click', function() {
+	   window.location = $(this).attr('href');
+	   return false;
+	});
+
+	//Application du Ferroslider qui permet une navigation des clients par navigation vertical dans ce cas précis
+	ferroSlider = $('.slidingSpaces').ferroSlider({
+		displace				: 'column', 		//Pour un slide vertical exclusivement
+		easing                  : 'easeOutExpo', 	//Pour un effet plus fluide lors de l'animation
+		feedbackArrows          : true,				//Possibilité de naviguer avec des flèches
+		time : 600									//Temps d'éxecution de la transition
+	});
+
+
+	
+	countClient=0;
+	$('.client').each(function(){
+		maxImages[countClient] = $("#client_"+countClient+" .imgs img").length;
+		currentImg[countClient]=0;
+		imgs[countClient] = $("#client_"+countClient+" .imgs");
+		imgs[countClient].swipe( swipeOptions );
+		countClient++;
+	});
+	
+	
+});
+//--------------------------------------------------------------------------------------------------------------------------------
+
+//---------------------------------------------------------- Les fonctions -------------------------------------------------------
+
+
+//--------------------------------------------------------------------------------------------------------------------------------
+
+	
+/**
+* Catch each phase of the swipe.
+* move : we drag the div.
+* cancel : we animate back to where we were
+* end : we animate to the next image
+*/			
+function swipeStatus(event, phase, direction, distance)
+{
+
+	countClient=$(this).attr('title');
+	//If we are moving before swipe, and we are going Lor R in X mode, or U or D in Y mode then drag.
+	if( phase=="move" && (direction=="left" || direction=="right") )
+	{
+		var duration=0;
+		
+		if (direction == "left")
+			scrollImages((IMG_WIDTH * currentImg[countClient]) + distance, duration);
+		
+		else if (direction == "right"){
+			scrollImages((IMG_WIDTH * currentImg[countClient]) - distance, duration);
+			}
+		
+	}
+	
+	else if ( phase == "cancel")
+	{
+		scrollImages(IMG_WIDTH * currentImg[countClient], speed);
+	}
+	
+	else if ( phase =="end" )
+	{
+		if (direction == "right")
+			previousImage()
+		else if (direction == "left")			
+			nextImage()
+	}
+}
+		
+
+
+function previousImage()
+{
+	currentImg[countClient] = Math.max(currentImg[countClient]-1, 0);
+	scrollImages( IMG_WIDTH * currentImg[countClient], speed);
+}
+
+function nextImage()
+{
+	currentImg[countClient] = Math.min(currentImg[countClient]+1, maxImages[countClient]-1);
+		
+	scrollImages( IMG_WIDTH * currentImg[countClient], speed);
+}
+	
+/**
+* Manuallt update the position of the imgs on drag
+*/
+function scrollImages(distance, duration)
+{
+	
+	imgs[countClient].css("-webkit-transition-duration", (duration/1000).toFixed(1) + "s");
+	
+	//inverse the number we set in the css
+	var value = (distance<0 ? "" : "-") + Math.abs(distance).toString();
+	imgs[countClient].css("-webkit-transform", "translate3d("+value +"px,0px,0px)");
+	
+}
+
+</script>
+
+</head>
+
+<body>
+<div id="all">
+</div>
+<div id="content_0" title="Grand public" class="content">
+	<div id="client_0" class="client slidingSpaces panels client" title="Guillet">
+		<div id="menu_slide"><a href="index-2.html" class="backToHome"><div class="bt_back_hor">Accueil <span style="color:#009cd5;">&nbsp;&gt;</span></div><div class="bt_back"><h1>Accueil</h1></div></a><div class="title_cat">Grand public (1/8)</div></div>
+		<div class="clear"></div>
+		<div id="diaporama"><div class="imgs" title="0">
+		<img alt="" longdesc="#" src="../image/page/gd/pha2504121518205061.jpg" alt="" />
+			<img alt="Guillet" longdesc="ILV%20magasin.html" src="../image/page/gd/pha0807111722376878.jpg" alt="" />
+			<img alt="Guillet" longdesc="ILV%20magasin.html" src="../image/page/gd/pha2408111630255656.jpg" alt="" />
+			<img alt="Guillet" longdesc="Plaquette%20de%20pr%e9sentation%20produits.html" src="../image/page/gd/pha080711172015523.jpg" alt="" />
+			<img alt="Guillet" longdesc="Lettre%20Info.html" src="../image/page/gd/pha0807111719743072.jpg" alt="" />
+			<img alt="Guillet" longdesc="Site%20internet.html" src="../image/page/gd/pha3007111219768728.jpg" alt="" />
+			<img alt="Guillet" longdesc="Campagne%20d%27affichage%204x3.html" src="../image/page/gd/pha2408111446591582.jpg" alt="" />
+		</div></div>
+		<div class="clear"></div>
+	</div>
+	<div id="client_1" class="client slidingSpaces panels client" title="Plus de Fleurs">
+		<div id="menu_slide"><a href="index-2.html" class="backToHome"><div class="bt_back_hor">Accueil <span style="color:#009cd5;">&nbsp;&gt;</span></div><div class="bt_back"><h1>Accueil</h1></div></a><div class="title_cat">Grand public (2/8)</div></div>
+		<div class="clear"></div>
+		<div id="diaporama"><div class="imgs" title="1">
+		<img alt="" longdesc="#" src="../image/page/gd/pha2504121520447048.jpg" alt="" />
+			<img alt="Plus de Fleurs" longdesc="Signal%e9tique%20magasin.html" src="../image/page/gd/pha220811145331974.jpg" alt="" />
+			<img alt="Plus de Fleurs" longdesc="Signal%e9tique%20magasin.html" src="../image/page/gd/pha2208111451109251.jpg" alt="" />
+			<img alt="Plus de Fleurs" longdesc="#" src="../image/page/gd/pha2208111452142856.jpg" alt="" />
+			<img alt="PLus de Fleurs" longdesc="Mise%20en%20avant%20promotionnelle.html" src="../image/page/gd/pha2208111448853167.jpg" alt="" />
+			<img alt="Plus de Fleurs" longdesc="Papeterie%20_%20carte%20de%20visite%2c%20papier%20%e0%20ent%eate%2c%20t%eate%20de%20lettre.html" src="../image/page/gd/pha2208111440735510.jpg" alt="" />
+			<img alt="Plus de Fleurs" longdesc="Signal%e9tique%20magasin.html" src="../image/page/gd/pha2208111444299388.jpg" alt="" />
+		</div></div>
+		<div class="clear"></div>
+	</div>
+	<div id="client_2" class="client slidingSpaces panels client" title="Trigano">
+		<div id="menu_slide"><a href="index-2.html" class="backToHome"><div class="bt_back_hor">Accueil <span style="color:#009cd5;">&nbsp;&gt;</span></div><div class="bt_back"><h1>Accueil</h1></div></a><div class="title_cat">Grand public (3/8)</div></div>
+		<div class="clear"></div>
+		<div id="diaporama"><div class="imgs" title="2">
+		<img alt="" longdesc="#" src="../image/page/gd/pha250412155247328.jpg" alt="" />
+			<img alt="Trigano" longdesc="Catalogue.html" src="../image/page/gd/pha1010111547942086.jpg" alt="" />
+			<img alt="Trigano" longdesc="Catalogue.html" src="../image/page/gd/pha1010111547549123.jpg" alt="" />
+			<img alt="Trigano" longdesc="Signal%e9tique.html" src="../image/page/gd/pha1010111548269317.jpg" alt="" />
+			<img alt="Trigano" longdesc="#" src="../image/page/gd/pha1010111549181102.jpg" alt="" />
+		</div></div>
+		<div class="clear"></div>
+	</div>
+	<div id="client_3" class="client slidingSpaces panels client" title="Geka">
+		<div id="menu_slide"><a href="index-2.html" class="backToHome"><div class="bt_back_hor">Accueil <span style="color:#009cd5;">&nbsp;&gt;</span></div><div class="bt_back"><h1>Accueil</h1></div></a><div class="title_cat">Grand public (4/8)</div></div>
+		<div class="clear"></div>
+		<div id="diaporama"><div class="imgs" title="3">
+		<img alt="" longdesc="#" src="../image/page/gd/pha2504121552814658.jpg" alt="" />
+			<img alt="" longdesc="Campagne%20affiche%204%20x%203.html" src="../image/page/gd/pha0806111632277754.jpg" alt="" />
+			<img alt="" longdesc="Campagne%20affiche%204%20x%203.html" src="../image/page/gd/pha0806111631722573.jpg" alt="" />
+			<img alt="" longdesc="D%e9pliant%20services%20(3%20volets).html" src="../image/page/gd/pha0807111741791538.jpg" alt="" />
+			<img alt="Création d'un site internet" longdesc="Cr%e9ation%20d%27un%20site%20vitrine.html" src="../image/page/gd/pha2505121633344272.jpg" alt="" />
+			<img alt="" longdesc="D%e9pliant%20publicitaire%20(2%20volets).html" src="../image/page/gd/pha0807111741115666.jpg" alt="" />
+			<img alt="Geka " longdesc="PLV%20et%20signal%e9tique%20magasin.html" src="../image/page/gd/pha0807111740487333.jpg" alt="" />
+			<img alt="Geka" longdesc="#" src="../image/page/gd/pha0807111741220311.jpg" alt="" />
+		</div></div>
+		<div class="clear"></div>
+	</div>
+	<div id="client_4" class="client slidingSpaces panels client" title="EMD">
+		<div id="menu_slide"><a href="index-2.html" class="backToHome"><div class="bt_back_hor">Accueil <span style="color:#009cd5;">&nbsp;&gt;</span></div><div class="bt_back"><h1>Accueil</h1></div></a><div class="title_cat">Grand public (5/8)</div></div>
+		<div class="clear"></div>
+		<div id="diaporama"><div class="imgs" title="4">
+		<img alt="" longdesc="#" src="../image/page/gd/pha2504121553662594.jpg" alt="" />
+			<img alt="EMD" longdesc="Plaquette.html" src="../image/page/gd/pha1307111557463273.jpg" alt="" />
+			<img alt="EMD" longdesc="Plaquette.html" src="../image/page/gd/pha2208111550858995.jpg" alt="" />
+			<img alt="EMD " longdesc="Campagne%20d%27affichage.html" src="../image/page/gd/pha2208111551127286.jpg" alt="" />
+			<img alt="EMD" longdesc="Site%20internet%20_%20Voir%20le%20site.html" src="../image/page/gd/pha2208111552834584.jpg" alt="" />
+			<img alt="EMD" longdesc="Papeterie.html" src="../image/page/gd/pha2208111552728046.jpg" alt="" />
+		</div></div>
+		<div class="clear"></div>
+	</div>
+	<div id="client_5" class="client slidingSpaces panels client" title="Clos Syrah">
+		<div id="menu_slide"><a href="index-2.html" class="backToHome"><div class="bt_back_hor">Accueil <span style="color:#009cd5;">&nbsp;&gt;</span></div><div class="bt_back"><h1>Accueil</h1></div></a><div class="title_cat">Grand public (6/8)</div></div>
+		<div class="clear"></div>
+		<div id="diaporama"><div class="imgs" title="5">
+		<img alt="" longdesc="#" src="../image/page/gd/pha2504121553746140.jpg" alt="" />
+			<img alt="" longdesc="Flyers%20et%20affichettes.html" src="../image/page/gd/pha0806111646131960.jpg" alt="" />
+			<img alt="" longdesc="Flyers%20et%20affichettes.html" src="../image/page/gd/pha0806111646614799.jpg" alt="" />
+			<img alt="" longdesc="Rond%20de%20serviette.html" src="../image/page/gd/pha0806111646793487.jpg" alt="" />
+			<img alt="Clos Syrah" longdesc="Site%20internet.html" src="../image/page/gd/pha2408111558640364.jpg" alt="" />
+		</div></div>
+		<div class="clear"></div>
+	</div>
+	<div id="client_6" class="client slidingSpaces panels client" title="Foire du Dauphin�">
+		<div id="menu_slide"><a href="index-2.html" class="backToHome"><div class="bt_back_hor">Accueil <span style="color:#009cd5;">&nbsp;&gt;</span></div><div class="bt_back"><h1>Accueil</h1></div></a><div class="title_cat">Grand public (7/8)</div></div>
+		<div class="clear"></div>
+		<div id="diaporama"><div class="imgs" title="6">
+		<img alt="" longdesc="#" src="../image/page/gd/pha2504121553624726.jpg" alt="" />
+			<img alt="Foire du Dauphiné" longdesc="#" src="../image/page/gd/pha1010111209371634.jpg" alt="" />
+			<img alt="Foire du Dauphiné" longdesc="#" src="../image/page/gd/pha1010111209980253.jpg" alt="" />
+			<img alt="Foire du Dauphiné" longdesc="#" src="../image/page/gd/pha1010111208691726.jpg" alt="" />
+			<img alt="Foire du Dauphiné" longdesc="#" src="../image/page/gd/pha1010111208337986.jpg" alt="" />
+			<img alt="Foire du Dauphiné 2010" longdesc="#" src="../image/page/gd/pha1010111224409645.jpg" alt="" />
+			<img alt="Foire du Dauphiné" longdesc="#" src="../image/page/gd/pha1010111224220155.jpg" alt="" />
+			<img alt="Foire du Dauphiné" longdesc="#" src="../image/page/gd/pha1010111223602249.jpg" alt="" />
+			<img alt="Foire du Dauphiné" longdesc="#" src="../image/page/gd/pha1010111208934994.jpg" alt="" />
+		</div></div>
+		<div class="clear"></div>
+	</div>
+	<div id="client_7" class="client slidingSpaces panels client" title="R�novert">
+		<div id="menu_slide"><a href="index-2.html" class="backToHome"><div class="bt_back_hor">Accueil <span style="color:#009cd5;">&nbsp;&gt;</span></div><div class="bt_back"><h1>Accueil</h1></div></a><div class="title_cat">Grand public (8/8)</div></div>
+		<div class="clear"></div>
+		<div id="diaporama"><div class="imgs" title="7">
+		<img alt="" longdesc="#" src="../image/page/gd/pha2504121554641439.jpg" alt="" />
+			<img alt="Papeterie" longdesc="Affichage.html" src="../image/page/gd/pha2208111504275656.jpg" alt="" />
+			<img alt="Papeterie" longdesc="Affichage.html" src="../image/page/gd/pha220811150541285.jpg" alt="" />
+			<img alt="Papeterie" longdesc="Stand.html" src="../image/page/gd/pha2208111505912297.jpg" alt="" />
+		</div></div>
+		<div class="clear"></div>
+	</div>
+</div>
+
+</div>
+</body>
+
+
+<!-- Mirrored from www.travailassocie.com/webapp/clients.php?num=52 by HTTrack Website Copier/3.x [XR&CO'2010], Thu, 28 Jun 2012 08:49:04 GMT -->
+<!-- Added by HTTrack --><meta http-equiv="content-type" content="text/html;charset=utf-8" /><!-- /Added by HTTrack -->
+</html>
